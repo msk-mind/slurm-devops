@@ -126,7 +126,7 @@ classify_and_act() {
     log "INFO" "Checking node=${node} state=${state} reason=${reason}"
 
     case "$state" in
-        down|down+drain|down+drain+not_responding|not_responding|down+not_responding|drain)
+        down|down+drain|down+drain+not_responding|not_responding|down+not_responding|drain|drained)
             if is_slurm_auto_reason "$reason"; then
                 do_resume "$node" "$state" "$reason"
             else

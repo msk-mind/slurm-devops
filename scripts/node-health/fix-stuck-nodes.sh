@@ -140,7 +140,7 @@ process_nodes() {
         [[ -z "$node" ]] && continue
         found=1
         classify_and_act "$node" "$state" "$reason"
-    done < <(sinfo -h -N -o "%N|%T|%E" --states=down,drain,not_responding 2>/dev/null || true)
+    done < <(sinfo -h -N -o "%N|%T|%E" --states=down,drain,drained,no_respond 2>&1 || true)
 
     if (( found == 0 )); then
         log "INFO" "No nodes in down/drain/not_responding states"

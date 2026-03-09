@@ -3,5 +3,5 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 MAILTO=""
 
 # Run every 5 minutes as the slurm user to detect and resume stuck nodes.
-# Install: cp cron/slurm-node-health.cron /etc/cron.d/slurm-node-health
-*/5 * * * * slurm /gpfs/mskmind_ess/limr/repos/slurm-devops/scripts/node-health/fix-stuck-nodes.sh
+# Install: sudo bash scripts/node-health/install.sh
+*/5 * * * * slurm /usr/local/sbin/slurm-node-health

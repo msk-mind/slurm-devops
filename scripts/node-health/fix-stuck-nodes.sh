@@ -86,6 +86,8 @@ is_slurm_auto_reason() {
         "^low realmemory" \
         "^prolog not responding" \
         "^epilog not responding" \
+        "^prolog error" \
+        "^epilog error" \
         "^communication error" \
         "^slurm error" \
     ; do

@@ -60,41 +60,28 @@ log() {
 
 # ---------------------------------------------------------------------------
 # is_slurm_auto_reason REASON
-# Returns 0 (safe to auto-resume) for empty/none or known Slurm-auto reasons.
-# Returns 1 (admin-set, leave alone) for anything else.
+# Returns 0 (safe to auto-resume) unless the [user@timestamp] annotation
+# shows a non-slurm user set the reason (i.e., an admin drained it manually).
 # ---------------------------------------------------------------------------
 is_slurm_auto_reason() {
     local reason="${1:-}"
-
-    # Strip trailing annotation like [user@timestamp] that Slurm appends
-    reason="${reason% \[*}"
 
     # Empty or literal "none" → safe
     local lower="${reason,,}"
     [[ -z "$lower" || "$lower" == "none" ]] && return 0
 
-    # Known Slurm-auto-generated reason prefixes / exact strings
-    local pattern
-    for pattern in \
-        "^not responding" \
-        "^not_responding" \
-        "^slurmd contact timeout" \
-        "^slurmdcontacttimeout" \
-        "^kill task failed" \
-        "^node unexpectedly rebooted" \
-        "^low socket.core.thread count" \
-        "^low realmemory" \
-        "^prolog not responding" \
-        "^epilog not responding" \
-        "^prolog error" \
-        "^epilog error" \
-        "^communication error" \
-        "^slurm error" \
-    ; do
-        [[ "$lower" =~ $pattern ]] && return 0
-    done
+    # Extract user from [user@timestamp] annotation if present
+    local annotated_user=""
+    if [[ "$reason" =~ \[([^@]+)@ ]]; then
+        annotated_user="${BASH_REMATCH[1]}"
+    fi
 
-    return 1
+    # If a non-slurm user set this reason, it's admin-set — leave it alone
+    if [[ -n "$annotated_user" && "$annotated_user" != "slurm" ]]; then
+        return 1
+    fi
+
+    return 0
 }
 
 # ---------------------------------------------------------------------------
